@@ -14,6 +14,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
@@ -23,6 +24,7 @@ import com.lowagie.text.FontFactory;
 import com.lowagie.text.Paragraph;
 
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -140,20 +142,34 @@ public class Main extends JFrame {
         });
         
         btnAñadirExcel.addActionListener(e -> {
-            List<Equipo> equipos = null;
-			try {
-				equipos = equipoDAO.obtenerListaEquipos();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} // Obtener los equipos de donde sea
-            String nombreArchivo = "equipos_y_jugadores.xlsx";
-            
-            // Llamar al método generarExcel
-            generarExcel(nombreArchivo, equipos);
+            List<Equipo> equipos = new ArrayList<>(); 
 
-            // Mostrar un mensaje de éxito al usuario
-            JOptionPane.showMessageDialog(null, "Excel generado correctamente!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            try {
+                equipos = equipoDAO.obtenerListaEquipos();
+            } catch (SQLException e1) {
+                JOptionPane.showMessageDialog(null, "Error al obtener la lista de equipos: " + e1.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                e1.printStackTrace();
+                return; 
+            }
+
+            if (equipos == null || equipos.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "No hay equipos disponibles para exportar.", 
+                        "Advertencia", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            String nombreArchivo = "equipos_y_jugadores.xlsx";
+
+            
+            try {
+                generarExcel(nombreArchivo, equipos);
+                JOptionPane.showMessageDialog(null, "Excel generado correctamente!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "Error al generar el archivo Excel: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
         });
 
        
@@ -529,10 +545,12 @@ public class Main extends JFrame {
         Row tituloRow = sheet.createRow(rowNum++);
         Cell tituloCell = tituloRow.createCell(0);
         tituloCell.setCellValue("Lista de Equipos y Jugadores");
+
+        
         CellStyle estiloTitulo = workbook.createCellStyle();
-        Font font = (Font) workbook.createFont();
-        ((org.apache.poi.ss.usermodel.Font) font).setBold(true);
-        estiloTitulo.setFont((org.apache.poi.ss.usermodel.Font) font);
+        XSSFFont font = (XSSFFont) workbook.createFont();
+        font.setBold(true);
+        estiloTitulo.setFont(font);
         tituloCell.setCellStyle(estiloTitulo);
 
         rowNum++; 
@@ -542,12 +560,11 @@ public class Main extends JFrame {
             Row rowEquipo = sheet.createRow(rowNum++);
             rowEquipo.createCell(0).setCellValue("Equipo: " + equipo.getNombre());
 
-            
+           
             Row headerRow = sheet.createRow(rowNum++);
             headerRow.createCell(0).setCellValue("Jugador");
             headerRow.createCell(1).setCellValue("Posición");
 
-            
             List<Jugador> jugadores = equipo.getListaJugadores();
             if (jugadores != null && !jugadores.isEmpty()) {
                 for (Jugador jugador : jugadores) {
@@ -556,7 +573,6 @@ public class Main extends JFrame {
                     row.createCell(1).setCellValue(jugador.getPosicion());
                 }
             } else {
-            	
                 Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue("No hay jugadores en este equipo.");
             }
@@ -570,6 +586,7 @@ public class Main extends JFrame {
             System.out.println("Excel generado correctamente.");
         } catch (IOException e) {
             e.printStackTrace();
+            throw new RuntimeException("Error al guardar el archivo Excel: " + e.getMessage());
         } finally {
             try {
                 workbook.close();
@@ -578,6 +595,7 @@ public class Main extends JFrame {
             }
         }
     }
+
     
     private static boolean realizarLogin() {
         
