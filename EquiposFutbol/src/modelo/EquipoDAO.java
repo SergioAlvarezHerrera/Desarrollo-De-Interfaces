@@ -58,12 +58,23 @@ public class EquipoDAO {
      }
      
      public void eliminarEquipo(int id) throws SQLException {
-         String sql = "DELETE FROM Equipos WHERE id = ?";
-         try (PreparedStatement stmt = conexion.prepareStatement(sql)) {
-             stmt.setInt(1, id);
-             stmt.executeUpdate();
-         }
-     }
+    	    String sqlEliminarJugadores = "DELETE FROM Jugadores WHERE equipo_id = ?"; // Aquí corregido
+    	    String sqlEliminarEquipo = "DELETE FROM Equipos WHERE id = ?";
+
+    	    try (PreparedStatement stmtJugadores = conexion.prepareStatement(sqlEliminarJugadores);
+    	         PreparedStatement stmtEquipo = conexion.prepareStatement(sqlEliminarEquipo)) {
+
+    	        // Primero eliminar los jugadores asociados al equipo
+    	        stmtJugadores.setInt(1, id);
+    	        stmtJugadores.executeUpdate();
+
+    	        // Luego eliminar el equipo
+    	        stmtEquipo.setInt(1, id);
+    	        stmtEquipo.executeUpdate();
+    	    }
+    	}
+
+
 
 	public Connection getConexion() {
 		// TODO Auto-generated method stub

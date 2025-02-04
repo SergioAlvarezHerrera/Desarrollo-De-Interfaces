@@ -97,7 +97,7 @@ public class Main extends JFrame {
         panelInformacion.setBackground(Color.DARK_GRAY); 
         panelInformacion.setPreferredSize(new Dimension(300, 600));
 
-        lblInformacion = new JLabel("Seleccione un equipo o jugador");
+        lblInformacion = new JLabel("Seleccione un equipo o jugador ");
         lblInformacion.setFont(new Font("Arial", Font.PLAIN, 14));
         lblInformacion.setForeground(Color.WHITE);
         lblInformacion.setHorizontalAlignment(JLabel.CENTER);
@@ -132,7 +132,6 @@ public class Main extends JFrame {
         menuArchivos.add(btnAñadirPDF);
         menuArchivos.add(btnAñadirExcel);
         
-        
         menuBar.add(menuEquipos);
         menuBar.add(menuJugadores);
         menuBar.add(menuArchivos);
@@ -162,7 +161,7 @@ public class Main extends JFrame {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        });
+         });
         
         btnAñadirExcel.addActionListener(e -> {
             String filePath = "Equipos_Jugadores.xlsx"; 
@@ -234,7 +233,6 @@ public class Main extends JFrame {
             lblInformacion.setText("No hay jugador seleccionado.");
         }
     }
-    
 
 
     
@@ -442,10 +440,20 @@ public class Main extends JFrame {
         try {
             int selectedRow = tablaEquipos.getSelectedRow();
             if (selectedRow >= 0) {
-                int id = (int) modeloEquipos.getValueAt(selectedRow, 0);
-                equipoDAO.eliminarEquipo(id);
+                int equipoId = (int) modeloEquipos.getValueAt(selectedRow, 0);
+
+                // Eliminar primero los jugadores del equipo
+                jugadorDAO.eliminarJugador(equipoId);
+
+                // Luego eliminar el equipo
+                equipoDAO.eliminarEquipo(equipoId);
+
+                // Actualizar la tabla de equipos
                 cargarEquipos();
+
+                // Limpiar la tabla de jugadores si el equipo eliminado estaba seleccionado
                 modeloJugadores.setRowCount(0);
+
                 JOptionPane.showMessageDialog(this, "Equipo eliminado correctamente.");
             } else {
                 JOptionPane.showMessageDialog(this, "Seleccione un equipo para eliminar.");
@@ -454,6 +462,8 @@ public class Main extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al eliminar equipo: " + ex.getMessage());
         }
     }
+
+
 
     private void eliminarJugador() {
         try {

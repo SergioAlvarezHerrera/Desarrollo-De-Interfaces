@@ -24,18 +24,18 @@ class SplashScreen extends JDialog {
 
        
         JLabel logoLabel = new JLabel();
-        ImageIcon imagen = new ImageIcon("Lib/leyendas.png");
+        ImageIcon imagen = new ImageIcon("Lib/mafia.png");
         ImageIcon imagenEscalada = new ImageIcon(imagen.getImage().getScaledInstance(400, 200, java.awt.Image.SCALE_SMOOTH));
         logoLabel.setIcon(imagenEscalada);
 
        
         JLabel messageLabel = new JLabel("Cargando recursos, por favor espere...", JLabel.CENTER);
         messageLabel.setFont(messageLabel.getFont().deriveFont(14f));
-        messageLabel.setForeground(Color.BLUE);
+        messageLabel.setForeground(Color.WHITE);
 
         progressBar = new JProgressBar(0, 100);
         progressBar.setStringPainted(true);
-        progressBar.setForeground(Color.BLUE);
+        progressBar.setForeground(Color.BLACK);
 
      
         mainPanel.add(logoLabel, BorderLayout.CENTER);
