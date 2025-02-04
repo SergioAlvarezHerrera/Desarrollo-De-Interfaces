@@ -2,6 +2,7 @@ package modelo;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.awt.*;
@@ -148,6 +149,36 @@ public class Main extends JFrame {
         btnEliminarJugador.addActionListener(e -> eliminarJugador());
        
         
+        JMenu menuFiltros = new JMenu("Filtros");
+
+        
+        JMenu menuFiltroEquipos = new JMenu("Filtrar Equipos");
+        JMenuItem filtroNombreEquipo = new JMenuItem("Por Nombre");
+        JMenuItem filtroCiudadEquipo = new JMenuItem("Por Ciudad");
+        JMenuItem eliminarFiltrosEquipos = new JMenuItem("Eliminar Filtros Equipos");
+        menuFiltroEquipos.add(filtroNombreEquipo);
+        menuFiltroEquipos.add(filtroCiudadEquipo);
+        
+
+       
+        JMenu menuFiltroJugadores = new JMenu("Filtrar Jugadores");
+        JMenuItem filtroNombreJugador = new JMenuItem("Por Nombre");
+        JMenuItem filtroPosicionJugador = new JMenuItem("Por Posición");
+        JMenuItem eliminarFiltrosJugadores = new JMenuItem("Eliminar Filtros Jugadores");
+        menuFiltroJugadores.add(filtroNombreJugador);
+        menuFiltroJugadores.add(filtroPosicionJugador);
+        
+        
+        
+
+        menuFiltros.add(menuFiltroEquipos);
+        menuFiltros.add(menuFiltroJugadores);
+        menuFiltros.add(eliminarFiltrosEquipos);
+        menuFiltros.add(eliminarFiltrosJugadores);	
+        menuBar.add(menuFiltros);
+        setJMenuBar(menuBar);
+
+        
 
        
         btnAñadirPDF.addActionListener(e -> {
@@ -196,6 +227,57 @@ public class Main extends JFrame {
                 }
             }
         });
+        
+    
+        filtroNombreEquipo.addActionListener(e -> {
+            String nombre = JOptionPane.showInputDialog(this, "Ingrese el nombre del equipo:");
+            if (nombre != null) {
+                TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modeloEquipos);
+                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + nombre, 1)); 
+                tablaEquipos.setRowSorter(sorter);
+            }
+        });
+
+       
+        filtroCiudadEquipo.addActionListener(e -> {
+            String ciudad = JOptionPane.showInputDialog(this, "Ingrese la ciudad del equipo:");
+            if (ciudad != null) {
+                TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modeloEquipos);
+                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + ciudad, 2)); 
+                tablaEquipos.setRowSorter(sorter);
+            }
+        });
+
+        
+        filtroNombreJugador.addActionListener(e -> {
+            String nombre = JOptionPane.showInputDialog(this, "Ingrese el nombre del jugador:");
+            if (nombre != null) {
+                TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modeloJugadores);
+                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + nombre, 1)); 
+                tablaJugadores.setRowSorter(sorter);
+            }
+        });
+        
+        
+
+       
+        filtroPosicionJugador.addActionListener(e -> {
+            String posicion = JOptionPane.showInputDialog(this, "Ingrese la posición del jugador:");
+            if (posicion != null) {
+                TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modeloJugadores);
+                sorter.setRowFilter(RowFilter.regexFilter("(?i)" + posicion, 2)); 
+                tablaJugadores.setRowSorter(sorter);
+            }
+        });
+        
+        eliminarFiltrosEquipos.addActionListener(e ->{
+        	tablaEquipos.setRowSorter(null);
+        });
+        
+        eliminarFiltrosJugadores.addActionListener(e ->{
+        	tablaJugadores.setRowSorter(null);
+        });
+
         
         
 
@@ -442,16 +524,16 @@ public class Main extends JFrame {
             if (selectedRow >= 0) {
                 int equipoId = (int) modeloEquipos.getValueAt(selectedRow, 0);
 
-                // Eliminar primero los jugadores del equipo
+             
                 jugadorDAO.eliminarJugador(equipoId);
 
-                // Luego eliminar el equipo
+                
                 equipoDAO.eliminarEquipo(equipoId);
 
-                // Actualizar la tabla de equipos
+               
                 cargarEquipos();
 
-                // Limpiar la tabla de jugadores si el equipo eliminado estaba seleccionado
+                
                 modeloJugadores.setRowCount(0);
 
                 JOptionPane.showMessageDialog(this, "Equipo eliminado correctamente.");
@@ -692,6 +774,5 @@ public class Main extends JFrame {
         }).start();
     }
 }
-    
     	
     
