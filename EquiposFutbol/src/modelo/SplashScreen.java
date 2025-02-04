@@ -20,22 +20,22 @@ class SplashScreen extends JDialog {
 
         
         JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBackground(Color.WHITE);
+        mainPanel.setBackground(Color.BLACK);
 
        
         JLabel logoLabel = new JLabel();
-        ImageIcon imagen = new ImageIcon("Lib/estadio.png");
+        ImageIcon imagen = new ImageIcon("Lib/leyendas.png");
         ImageIcon imagenEscalada = new ImageIcon(imagen.getImage().getScaledInstance(400, 200, java.awt.Image.SCALE_SMOOTH));
         logoLabel.setIcon(imagenEscalada);
 
        
         JLabel messageLabel = new JLabel("Cargando recursos, por favor espere...", JLabel.CENTER);
         messageLabel.setFont(messageLabel.getFont().deriveFont(14f));
-        messageLabel.setForeground(Color.GRAY);
+        messageLabel.setForeground(Color.BLUE);
 
         progressBar = new JProgressBar(0, 100);
         progressBar.setStringPainted(true);
-        progressBar.setForeground(new Color(10, 102, 204));
+        progressBar.setForeground(Color.BLUE);
 
      
         mainPanel.add(logoLabel, BorderLayout.CENTER);
@@ -57,7 +57,7 @@ class SplashScreen extends JDialog {
  
         for (int i = 0; i <= 100; i++) {
             try {
-                Thread.sleep(50); 
+                Thread.sleep(25); 
                 splashScreen.updateProgress(i);
             } catch (InterruptedException e) {
                 e.printStackTrace();
